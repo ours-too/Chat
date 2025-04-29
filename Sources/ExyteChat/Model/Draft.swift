@@ -4,7 +4,19 @@
 
 import Foundation
 import GiphyUISDK
-import ExyteMediaPicker
+
+// TODO: Временный мок, чтобы иметь возможность забилдить проект. Посмотреть в исходниках логику методов
+public struct Media {
+    let type: MediaType
+
+    func getThumbnailURL() -> URL? {
+        return nil
+    }
+
+    func getURL() -> URL? {
+        return nil
+    }
+}
 
 public struct DraftMessage: Sendable {
     public var id: String?

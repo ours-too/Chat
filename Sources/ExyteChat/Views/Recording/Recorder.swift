@@ -21,7 +21,8 @@ final actor Recorder {
     private var recorderSettings = RecorderSettings()
 
     var isAllowedToRecordAudio: Bool {
-        AVAudioApplication.shared.recordPermission == .granted
+        false
+        // TODO: AVAudioApplication.shared.recordPermission == .granted
     }
 
     var isRecording: Bool {
@@ -171,10 +172,11 @@ public struct RecorderSettings : Codable,Hashable {
 
 extension AVAudioSession {
     func requestRecordPermission() async -> Bool {
-        await withCheckedContinuation { continuation in
-            AVAudioApplication.requestRecordPermission { granted in
-                continuation.resume(returning: granted)
-            }
-        }
+        return false
+// TODO:        await withCheckedContinuation { continuation in
+//            AVAudioApplication.requestRecordPermission { granted in
+//                continuation.resume(returning: granted)
+//            }
+//        }
     }
 }

@@ -7,9 +7,6 @@
 
 import SwiftUI
 import GiphyUISDK
-import ExyteMediaPicker
-
-public typealias MediaPickerParameters = SelectionParamsHolder
 
 public enum ChatType: CaseIterable, Sendable {
     case conversation // the latest message is at the bottom, new messages appear from the bottom
@@ -116,8 +113,6 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     var messageMenuAnimationDuration: Double = 0.3
     var showNetworkConnectionProblem: Bool = false
     var tapAvatarClosure: TapAvatarClosure?
-    var mediaPickerSelectionParameters: MediaPickerParameters?
-    var orientationHandler: MediaPickerOrientationHandler = {_ in}
     var chatTitle: String?
     var paginationHandler: PaginationHandler?
     var showMessageTimeView = true
@@ -201,8 +196,8 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                     }
                 }
             }
-            .onChange(of: selectedMedia) {
-                if let giphyMedia = selectedMedia {
+            .onChange(of: selectedMedia) { newValue in
+                if let giphyMedia = newValue {
                     inputViewModel.attachments.giphyMedia = giphyMedia
                     inputViewModel.send()
                 }
@@ -219,25 +214,15 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                 }
             }
             .fullScreenCover(isPresented: $inputViewModel.showPicker) {
-                AttachmentsEditor(
-                    inputViewModel: inputViewModel,
-                    inputViewBuilder: inputViewBuilder,
-                    chatTitle: chatTitle,
-                    messageStyler: messageStyler,
-                    orientationHandler: orientationHandler,
-                    mediaPickerSelectionParameters: mediaPickerSelectionParameters,
-                    availableInputs: availableInputs,
-                    localization: localization
-                )
-                .environmentObject(globalFocusState)
+                // TODO: Посмотреть в какой момент меняется showPicker, возможно отображать шит camera/gallery здесь
             }
         
-            .onChange(of: inputViewModel.showPicker) { _ , newValue in
+            .onChange(of: inputViewModel.showPicker) { newValue in
                 if newValue {
                     globalFocusState.focus = nil
                 }
             }
-            .onChange(of: inputViewModel.showGiphyPicker) { _ , newValue in
+            .onChange(of: inputViewModel.showGiphyPicker) { newValue in
                 if newValue {
                     globalFocusState.focus = nil
                 }
@@ -582,25 +567,6 @@ public extension ChatView {
     func showNetworkConnectionProblem(_ show: Bool) -> ChatView {
         var view = self
         view.showNetworkConnectionProblem = show
-        return view
-    }
-    
-    func assetsPickerLimit(assetsPickerLimit: Int) -> ChatView {
-        var view = self
-        view.mediaPickerSelectionParameters = MediaPickerParameters()
-        view.mediaPickerSelectionParameters?.selectionLimit = assetsPickerLimit
-        return view
-    }
-    
-    func setMediaPickerSelectionParameters(_ params: MediaPickerParameters) -> ChatView {
-        var view = self
-        view.mediaPickerSelectionParameters = params
-        return view
-    }
-
-    func orientationHandler(orientationHandler: @escaping MediaPickerOrientationHandler) -> ChatView {
-        var view = self
-        view.orientationHandler = orientationHandler
         return view
     }
     

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import ExyteMediaPicker
 import GiphyUISDK
 
 public enum InputViewStyle: Sendable {
@@ -71,9 +70,7 @@ public struct InputViewAttachments {
 }
 
 struct InputView: View {
-    
     @Environment(\.chatTheme) private var theme
-    @Environment(\.mediaPickerTheme) private var pickerTheme
 
     @EnvironmentObject private var keyboardState: KeyboardState
     
@@ -149,11 +146,8 @@ struct InputView: View {
                     giphyButton
                 }
             case .signature:
-                if viewModel.mediaPickerMode == .cameraSelection {
-                    addButton
-                } else {
-                    Color.clear.frame(width: 12, height: 1)
-                }
+                // TODO: Посмотреть когда используется
+                Color.clear.frame(width: 12, height: 1)
             }
         }
     }
@@ -529,7 +523,7 @@ struct InputView: View {
         case .message:
             return theme.colors.mainBG
         case .signature:
-            return pickerTheme.main.pickerBackground
+            return theme.colors.mainBG
         }
     }
 

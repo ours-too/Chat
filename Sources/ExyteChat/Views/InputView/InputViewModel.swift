@@ -4,7 +4,10 @@
 
 import Foundation
 import Combine
-import ExyteMediaPicker
+
+public enum MediaPickerMode { // TODO: Из MediaPicker, посмотреть где используется
+    case photos, camera
+}
 
 @MainActor
 final class InputViewModel: ObservableObject {
