@@ -213,10 +213,21 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                     Text("no giphy key found")
                 }
             }
-            .fullScreenCover(isPresented: $inputViewModel.showPicker) {
-                // TODO: Посмотреть в какой момент меняется showPicker, возможно отображать шит camera/gallery здесь
+            .confirmationDialog(
+                "Выбрать источник",
+                isPresented: $inputViewModel.showPickerOptionsSheet,
+                titleVisibility: .hidden
+            ) {
+                Button("Камера") {
+                    inputViewModel.showCamera = true
+                }
+
+                Button("Галерея") {
+                    inputViewModel.showPicker = true
+                }
+
+                Button("Отмена", role: .cancel) { }
             }
-        
             .onChange(of: inputViewModel.showPicker) { newValue in
                 if newValue {
                     globalFocusState.focus = nil
@@ -225,6 +236,18 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
             .onChange(of: inputViewModel.showGiphyPicker) { newValue in
                 if newValue {
                     globalFocusState.focus = nil
+                }
+            }
+            .fullScreenCover(isPresented: $inputViewModel.showCamera) { // MARK: Отображение CameraView
+                CameraView { url in
+                    inputViewModel.attachments.medias = [Media(source: URLMediaModel(url: url))]
+                }
+            }
+            .sheet(isPresented: $inputViewModel.showPicker) { // MARK: Отображение ImagePicker
+                ImagePicker { imageURLs in
+                    inputViewModel.attachments.medias = imageURLs.map {
+                        Media(source: URLMediaModel(url: $0))
+                    }
                 }
             }
     }
