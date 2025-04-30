@@ -5,10 +5,6 @@
 import Foundation
 import Combine
 
-public enum MediaPickerMode { // TODO: Из MediaPicker, посмотреть где используется
-    case photos, camera
-}
-
 @MainActor
 final class InputViewModel: ObservableObject {
 
@@ -17,9 +13,9 @@ final class InputViewModel: ObservableObject {
     @Published var state: InputViewState = .empty
 
     @Published var showGiphyPicker = false
+    @Published var showPickerOptionsSheet = false
+    @Published var showCamera = false
     @Published var showPicker = false
-  
-    @Published var mediaPickerMode = MediaPickerMode.photos
 
     @Published var showActivityIndicator = false
 
@@ -51,7 +47,7 @@ final class InputViewModel: ObservableObject {
 
     func reset() {
         DispatchQueue.main.async { [weak self] in
-            self?.showPicker = false
+            self?.showPickerOptionsSheet = false
             self?.showGiphyPicker = false
             self?.text = ""
             self?.saveEditingClosure = nil
@@ -84,14 +80,8 @@ final class InputViewModel: ObservableObject {
         switch action {
         case .giphy:
             showGiphyPicker = true
-        case .photo:
-            mediaPickerMode = .photos
-            showPicker = true
-        case .add:
-            mediaPickerMode = .camera
-        case .camera:
-            mediaPickerMode = .camera
-            showPicker = true
+        case .photo, .add, .camera:
+            showPickerOptionsSheet = true
         case .send:
             send()
         case .recordAudioTap:
