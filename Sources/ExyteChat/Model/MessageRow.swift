@@ -70,7 +70,7 @@ public enum PositionInChat {
 }
 
 struct MessageRow: Equatable {
-    let message: Message
+    let message: any Message
     let positionInUserGroup: PositionInUserGroup
     let positionInMessagesSection: PositionInMessagesSection
     let commentsPosition: CommentsPosition?
