@@ -13,7 +13,7 @@ struct MessageView: View {
 
     @ObservedObject var viewModel: ChatViewModel
 
-    let message: Message
+    let message: any Message
     let positionInUserGroup: PositionInUserGroup
     let positionInMessagesSection: PositionInMessagesSection
     let chatType: ChatType
@@ -135,7 +135,7 @@ struct MessageView: View {
     }
 
     @ViewBuilder
-    func bubbleView(_ message: Message) -> some View {
+    func bubbleView(_ message: any Message) -> some View {
         VStack(
             alignment: message.user.isCurrentUser ? .leading : .trailing,
             spacing: -bubbleSize.height / 3
@@ -178,7 +178,7 @@ struct MessageView: View {
     }
 
     @ViewBuilder
-    func replyBubbleView(_ message: Message) -> some View {
+    func replyBubbleView(_ message: any Message) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(message.user.name)
                 .fontWeight(.semibold)
@@ -226,7 +226,7 @@ struct MessageView: View {
     }
 
     @ViewBuilder
-    func attachmentsView(_ message: Message) -> some View {
+    func attachmentsView(_ message: any Message) -> some View {
         AttachmentsGrid(attachments: message.attachments) {
             viewModel.presentAttachmentFullScreen($0)
         }
@@ -251,7 +251,7 @@ struct MessageView: View {
     }
 
     @ViewBuilder
-    func textWithTimeView(_ message: Message) -> some View {
+    func textWithTimeView(_ message: any Message) -> some View {
         let messageView = MessageTextView(
             text: message.text, messageStyler: messageStyler,
             userType: message.user.type, messageLinkPreviewLimit: messageLinkPreviewLimit
@@ -319,7 +319,11 @@ struct MessageView: View {
 extension View {
 
     @ViewBuilder
-    func bubbleBackground(_ message: Message, theme: ChatTheme, isReply: Bool = false) -> some View {
+    func bubbleBackground(
+        _ message: any Message,
+        theme: ChatTheme,
+        isReply: Bool = false
+    ) -> some View {
         let radius: CGFloat = !message.attachments.isEmpty ? 12 : 20
         let additionalMediaInset: CGFloat = message.attachments.count > 1 ? 2 : 0
         self
@@ -345,7 +349,7 @@ struct MessageView_Preview: PreviewProvider {
     static private var shortText = "Hi, buddy!"
     static private var longText = "Hello hello hello hello hello hello hello hello hello hello hello hello hello\n hello hello hello hello d d d d d d d d"
 
-    static private var replyedMessage = Message(
+    static private var replyedMessage = MessageImp(
         id: UUID().uuidString,
         user: stan,
         status: .read,
@@ -368,7 +372,7 @@ struct MessageView_Preview: PreviewProvider {
         ]
     )
 
-    static private var message = Message(
+    static private var message = MessageImp(
         id: UUID().uuidString,
         user: stan,
         status: .read,
@@ -376,7 +380,7 @@ struct MessageView_Preview: PreviewProvider {
         replyMessage: replyedMessage.toReplyMessage()
     )
 
-    static private var shortMessage = Message(
+    static private var shortMessage = MessageImp(
         id: UUID().uuidString,
         user: stan,
         status: .read,
