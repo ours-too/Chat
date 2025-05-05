@@ -9,7 +9,11 @@ import SwiftUI
 
 extension ChatView {
 
-    nonisolated static func mapMessages(_ messages: [Message], chatType: ChatType, replyMode: ReplyMode) -> [MessagesSection] {
+    nonisolated static func mapMessages<M: Message>(
+        _ messages: [M],
+        chatType: ChatType,
+        replyMode: ReplyMode
+    ) -> [MessagesSection] {
         guard messages.hasUniqueIDs() else {
             fatalError("Messages can not have duplicate ids, please make sure every message gets a unique id")
         }
@@ -25,7 +29,11 @@ extension ChatView {
         return result
     }
 
-    nonisolated static func mapMessagesQuoteModeReplies(_ messages: [Message], chatType: ChatType, replyMode: ReplyMode) -> [MessagesSection] {
+    nonisolated static func mapMessagesQuoteModeReplies(
+        _ messages: [any Message],
+        chatType: ChatType,
+        replyMode: ReplyMode
+    ) -> [MessagesSection] {
         let dates = Set(messages.map({ $0.createdAt.startOfDay() }))
             .sorted()
             .reversed()
@@ -43,7 +51,11 @@ extension ChatView {
         return result
     }
 
-    nonisolated static func mapMessagesCommentModeReplies(_ messages: [Message], chatType: ChatType, replyMode: ReplyMode) -> [MessagesSection] {
+    nonisolated static func mapMessagesCommentModeReplies(
+        _ messages: [any Message],
+        chatType: ChatType,
+        replyMode: ReplyMode
+    ) -> [MessagesSection] {
         let firstLevelMessages = messages.filter { m in
             m.replyMessage == nil
         }
@@ -55,7 +67,7 @@ extension ChatView {
 
         for date in dates {
             let dayFirstLevelMessages = firstLevelMessages.filter({ $0.createdAt.isSameDay(date) })
-            var dayMessages = [Message]() // insert second level in between first level
+            var dayMessages = [any Message]() // insert second level in between first level
             for m in dayFirstLevelMessages {
                 var replies = getRepliesFor(id: m.id, messages: messages)
                 replies.sort { $0.createdAt < $1.createdAt }
@@ -77,7 +89,10 @@ extension ChatView {
         return result
     }
 
-    nonisolated static private func getRepliesFor(id: String, messages: [Message]) -> [Message] {
+    nonisolated static private func getRepliesFor(
+        id: String,
+        messages: [any Message]
+    ) -> [any Message] {
         messages.compactMap { m in
             if m.replyMessage?.id == id {
                 return m
@@ -86,7 +101,13 @@ extension ChatView {
         }
     }
 
-    nonisolated static private func wrapSectionMessages(_ messages: [Message], chatType: ChatType, replyMode: ReplyMode, isFirstSection: Bool, isLastSection: Bool) -> [MessageRow] {
+    nonisolated static private func wrapSectionMessages(
+        _ messages: [any Message],
+        chatType: ChatType,
+        replyMode: ReplyMode,
+        isFirstSection: Bool,
+        isLastSection: Bool
+    ) -> [MessageRow] {
         messages
             .enumerated()
             .map {
