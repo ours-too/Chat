@@ -9,7 +9,7 @@ struct ReactionOverview: View {
     
     @StateObject var viewModel: ChatViewModel
     
-    let message: Message
+    let message: any Message
     let width: CGFloat
     let backgroundColor: Color
     let padding: CGFloat = 16
