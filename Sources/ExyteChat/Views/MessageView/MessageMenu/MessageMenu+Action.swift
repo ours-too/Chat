@@ -9,11 +9,11 @@ public protocol MessageMenuAction: Equatable, CaseIterable {
     func title() -> String
     func icon() -> Image
     
-    static func menuItems(for message: Message) -> [Self]
+    static func menuItems(for message: any Message) -> [Self]
 }
 
 extension MessageMenuAction {
-    public static func menuItems(for message: Message) -> [Self] {
+    public static func menuItems(for message: any Message) -> [Self] {
         Self.allCases.map { $0 }
     }
 }
@@ -61,7 +61,7 @@ public enum DefaultMessageMenuAction: MessageMenuAction, Sendable {
         .copy, .reply, .edit(saveClosure: {_ in})
     ]
     
-    static public func menuItems(for message: Message) -> [DefaultMessageMenuAction] {
+    static public func menuItems(for message: any Message) -> [DefaultMessageMenuAction] {
         if message.user.isCurrentUser {
             return allCases
         } else {
