@@ -29,12 +29,12 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     /// - closure to pass user interaction, .reply for example
     /// - pass attachment to this closure to use ChatView's fullscreen media viewer
     public typealias MessageBuilderClosure = ((
-        _ message: Message,
+        _ message: any Message,
         _ positionInGroup: PositionInUserGroup,
         _ positionInMessagesSection: PositionInMessagesSection,
         _ positionInCommentsGroup: CommentsPosition?,
         _ showContextMenuClosure: @escaping () -> Void,
-        _ messageActionClosure: @escaping (Message, DefaultMessageMenuAction) -> Void,
+        _ messageActionClosure: @escaping (any Message, DefaultMessageMenuAction) -> Void,
         _ showAttachmentClosure: @escaping (Attachment) -> Void
     ) -> MessageContent)
     
@@ -60,8 +60,8 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     /// When implementing your own MessageMenuActionClosure, write a switch statement passing through all the cases of your MessageMenuAction, inside each case write your own action handler, or call the default one. NOTE: not all default actions work out of the box - e.g. for .edit you'll still need to provide a closure to save the edited text on your BE. Please see CommentsExampleView in ChatExample project for MessageMenuActionClosure usage example.
     public typealias MessageMenuActionClosure = (
         _ selectedMenuAction: MenuAction,
-        _ defaultActionClosure: @escaping (Message, DefaultMessageMenuAction) -> Void,
-        _ message: Message
+        _ defaultActionClosure: @escaping (any Message, DefaultMessageMenuAction) -> Void,
+        _ message: any Message
     ) -> Void
     
     /// User and MessageId
@@ -141,7 +141,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     @State private var giphyConfigured = false
     @State private var selectedMedia: GPHMedia? = nil
     
-    public init(messages: [Message],
+    public init<M: Message>(messages: [M],
                 chatType: ChatType = .conversation,
                 replyMode: ReplyMode = .quote,
                 didSendMessage: @escaping (DraftMessage) -> Void,
@@ -153,7 +153,11 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
         self.type = chatType
         self.didSendMessage = didSendMessage
         self.reactionDelegate = reactionDelegate
-        self.sections = ChatView.mapMessages(messages, chatType: chatType, replyMode: replyMode)
+        self.sections = ChatView.mapMessages(
+            messages,
+            chatType: chatType,
+            replyMode: replyMode
+        )
         self.ids = messages.map { $0.id }
         self.messageBuilder = messageBuilder
         self.inputViewBuilder = inputViewBuilder
@@ -446,7 +450,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     }
     
     /// Determines the message menu alignment based on ChatType and message sender.
-    private func menuAlignment(_ message: Message, chatType: ChatType) -> MessageMenuAlignment {
+    private func menuAlignment(_ message: any Message, chatType: ChatType) -> MessageMenuAlignment {
         switch chatType {
         case .conversation:
             return message.user.isCurrentUser ? .right : .left
@@ -456,7 +460,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     }
     
     /// Our default reactionCallback flow if the user supports Reactions by implementing the didReactToMessage closure
-    private func reactionClosure(_ message: Message) -> (ReactionType?) -> () {
+    private func reactionClosure(_ message: any Message) -> (ReactionType?) -> () {
         return { reactionType in
             Task {
                 // Run the callback on the main thread
@@ -472,7 +476,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     }
     
     /// Our default Menu Action closure
-    func menuActionClosure(_ message: Message) -> (MenuAction) -> () {
+    func menuActionClosure(_ message: any Message) -> (MenuAction) -> () {
         if let messageMenuAction {
             return { action in
                 hideMessageMenu()
@@ -688,11 +692,11 @@ public extension ChatView {
     
     /// Constructs, and applies, a ReactionDelegate for you based on the provided closures
     func onMessageReaction(
-        didReactTo: @escaping (Message, DraftReaction) -> Void,
-        canReactTo: ((Message) -> Bool)? = nil,
-        availableReactionsFor: ((Message) -> [ReactionType]?)? = nil,
-        allowEmojiSearchFor: ((Message) -> Bool)? = nil,
-        shouldShowOverviewFor: ((Message) -> Bool)? = nil
+        didReactTo: @escaping (any Message, DraftReaction) -> Void,
+        canReactTo: ((any Message) -> Bool)? = nil,
+        availableReactionsFor: ((any Message) -> [ReactionType]?)? = nil,
+        allowEmojiSearchFor: ((any Message) -> Bool)? = nil,
+        shouldShowOverviewFor: ((any Message) -> Bool)? = nil
     ) -> ChatView {
         var view = self
         view.reactionDelegate = DefaultReactionConfiguration(
