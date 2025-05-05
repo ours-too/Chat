@@ -514,7 +514,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
             return conf
         }
         
-        private func toContextualAction(_ item: SwipeActionable, message:Message) -> UIContextualAction {
+        private func toContextualAction(_ item: SwipeActionable, message:any Message) -> UIContextualAction {
             let ca = UIContextualAction(style: .normal, title: nil) { (action, sourceView, completionHandler) in
                 item.action(message, self.viewModel.messageMenuAction())
                 completionHandler(true)
