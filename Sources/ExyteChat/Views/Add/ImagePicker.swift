@@ -26,20 +26,16 @@ struct ImagePicker: UIViewControllerRepresentable {
             for result in results {
                 let provider = result.itemProvider
 
-                if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+                if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) { // VTODO: Не приходит URL изображения отсюда
                     provider.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { url, error in
                         guard let url = url else {
                             print("URL не получен: \(error?.localizedDescription ?? "неизвестная ошибка")")
                             return
                         }
-
-                        DispatchQueue.main.async {
-                            imageURLs.append(url)
-                        }
+                        imageURLs.append(url)
                     }
                 }
             }
-
             self.parent.didFinishPicking(imageURLs)
         }
     }
