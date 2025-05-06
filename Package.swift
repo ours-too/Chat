@@ -29,9 +29,6 @@ let package = Package(
             dependencies: [
                 .product(name: "ActivityIndicatorView", package: "ActivityIndicatorView"),
                 .product(name: "GiphyUISDK", package: "giphy-ios-sdk")
-            ],
-            swiftSettings: [
-                .enableExperimentalFeature("StrictConcurrency")
             ]
         ),
         .testTarget(
